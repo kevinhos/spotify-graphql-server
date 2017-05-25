@@ -1,6 +1,6 @@
 import {
     buildSchema
-} from 'graphql';
+} from 'graphql'
 
 const schema = buildSchema(`
 # The root of all queries:
@@ -28,6 +28,6 @@ type Track {
   preview_url: String
   id: ID
 }
-`);
+`)
 
-export default schema;
+export default schema

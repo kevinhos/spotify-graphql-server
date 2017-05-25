@@ -1,64 +1,64 @@
-import fetch from 'node-fetch';
+import fetch from 'node-fetch'
 
 export const fetchArtistsByName = (name) => {
-    console.log(`debug: query artist ${name} `);
+  console.log(`debug: query artist ${name} `)
 
-    return fetch(`https://api.spotify.com/v1/search?q=${name}&type=artist`)
+  return fetch(`https://api.spotify.com/v1/search?q=${name}&type=artist`)
         .then((response) => {
-            return response.json();
+          return response.json()
         })
         .then((data) => {
-            return data.artists.items || [];
+          return data.artists.items || []
         })
         .then((data) => {
-            return data.map(artistRaw => spotifyJsonToArtist(artistRaw));
-        });
-};
+          return data.map(artistRaw => spotifyJsonToArtist(artistRaw))
+        })
+}
 
 export const fetchAlbumsOfArtist = (artistId, limit) => {
-    console.log(`debug: query albums of artist ${artistId} `);
+  console.log(`debug: query albums of artist ${artistId} `)
 
-    return fetch(`https://api.spotify.com/v1/artists/${artistId}/albums`)
+  return fetch(`https://api.spotify.com/v1/artists/${artistId}/albums`)
         .then((response) => {
-            return response.json();
+          return response.json()
         })
         .then((data) => {
-            return data.items || [];
+          return data.items || []
         })
         .then((albumData) => {
-            return albumData.map(albumRaw => spotifyJsonToAlbum(albumRaw));
-        });
-};
+          return albumData.map(albumRaw => spotifyJsonToAlbum(albumRaw))
+        })
+}
 
 const spotifyJsonToArtist = (raw) => {
-    return {
+  return {
         // fills with raw data (by ES6 spread operator):
-        ...raw,
+    ...raw,
 
         // This needs extra logic: defaults to an empty string, if there is no image
         // else: just takes URL of the first image
-        image: raw.images[0] ? raw.images[0].url : '',
+    image: raw.images[0] ? raw.images[0].url : '',
 
         // .. needs to fetch the artist's albums:
-        albums: (args, object) => {
+    albums: (args, object) => {
             // this is similar to fetchArtistsByName()
             // returns a Promise which gets resolved asynchronously !
-            const artistId = raw.id;
-            const { limit=1 } = args;
-            return fetchAlbumsOfArtist(artistId, limit);
-        }
-    };
-};
+      const artistId = raw.id
+      const { limit = 1 } = args
+      return fetchAlbumsOfArtist(artistId, limit)
+    }
+  }
+}
 
 const spotifyJsonToAlbum = (albumRaw) => {
-    return {
+  return {
         // fills with raw data (by ES6 spread operator):
-        ...albumRaw,
+    ...albumRaw,
 
         // This needs extra logic: defaults to an empty string, if there is no image
         // else: just takes URL of the first image
-        image: albumRaw.images[0] ? albumRaw.images[0].url : '',
+    image: albumRaw.images[0] ? albumRaw.images[0].url : '',
 
-        tracks: [] // TODO implement fetching of tracks of album
-    };
-};
+    tracks: [] // TODO implement fetching of tracks of album
+  }
+}
