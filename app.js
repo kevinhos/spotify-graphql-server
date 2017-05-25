@@ -1,18 +1,16 @@
-var express = require('express')
-var path = require('path')
-var favicon = require('serve-favicon')
-var logger = require('morgan')
-var cookieParser = require('cookie-parser')
-var bodyParser = require('body-parser')
+const express = require('express')
+const path = require('path')
+const logger = require('morgan')
+const cookieParser = require('cookie-parser')
+const bodyParser = require('body-parser')
 const cors = require('cors')
+const expressGraphQL = require('express-graphql')
 
-var routes = require('./routes/index')
+const routes = require('./routes/index')
+const schema = require('./data/schema').default
+const {fetchArtistsByName} = require('./data/resolvers')
 
-var expressGraphQL = require('express-graphql')
-var schema = require('./data/schema').default
-import {fetchArtistsByName} from './data/resolvers'
-
-var app = express()
+const app = express()
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
@@ -40,7 +38,8 @@ app.use('/', routes)
 // API middleware
 
 const rootValue = {
-  queryArtists: ({ byName }) => fetchArtistsByName(byName)
+  queryArtists: ({ byName }) => fetchArtistsByName(byName),
+  hi: ({ message }) => `Hello, ${message || 'World'}!`
 }
 
 app.use('/graphql', expressGraphQL(req => ({
@@ -52,7 +51,7 @@ app.use('/graphql', expressGraphQL(req => ({
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  var err = new Error('Not Found')
+  const err = new Error('Not Found')
   err.status = 404
   next(err)
 })
