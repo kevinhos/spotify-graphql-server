@@ -39,7 +39,7 @@ app.use('/', routes)
 
 const rootValue = {
   queryArtists: ({ byName }) => fetchArtistsByName(byName),
-  hi: ({ message }) => `Hello, ${message || 'World'}!`
+  hi: ({ message }) => message
 }
 
 app.use('/graphql', expressGraphQL(req => ({
